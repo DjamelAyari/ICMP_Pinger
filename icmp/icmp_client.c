@@ -49,10 +49,10 @@ printf("Initializing WSA...\n");
     printf("Creating ICMP packet...\n");
     printf("Enter the number of packets you want to send.\n");
     int number_of_packets;
-    scanf("%d", &number_of_packets);
+    scanf("The number wanted is: %d", &number_of_packets);
     #define PACKET_SIZE 56;
     char icmp_packet[PACKET_SIZE]; //BUFFER
-    for (i = 0; i < number_of_packets; i++)
+    for (i = 0; i <= number_of_packets; i++)
     {
         struct icmp_header *icmp = (struct icmp_header)icmp_packet;
         icmp->type = ICMP_ECHO;
@@ -68,18 +68,28 @@ printf("Initializing WSA...\n");
         memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
 
         // Calculate the checksum before sending
+        //Creating a copy of the buffer for the checksum.
+        char icmp_packet_cpy;
+        memcpy(icmp_packet_cpy, icmp_header, strlen(icmp_header));
+        memset(&icmp_packet_cpy->icmp.checksum, 0, sizeof(icmp_packet_cpy->icmp.checksum));
+        //Break the packet into 4 number of blocks with 14 bits in each blocks.
+        char block1[14] = memcpy(icmp_packet_cpy, block1, strlen(block1));
+        char block2[14] = memcpy(icmp_packet_cpy + sizeof(block1), block2, strlen(block2));
+        char block3[14] = memcpy(icmp_packet_cpy + sizeof(block2), block3, strlen(block3));
+        char block4[14] = memcpy(icmp_packet_cpy + sizeof(block3), block4, strlen(block4));
         
         struct timeval current_time, end_time;
         START_TIMER(&current_time);
         printf("Sending packet...\n");
         //sendto(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
 
+        //NEED TO USE MALLOC/REALLOC !!!
         #define PACKET_SIZE = PACKET_SIZE * 2;
 
     }
 
     
-    
+    //USE A LOOP AND TIMEOUT (FOR PACKETS LOSES).
     printf("Receiving packet...\n");
     //recvfrom(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*) &from, &fromlen);
     START_TIMER(&end_time);
