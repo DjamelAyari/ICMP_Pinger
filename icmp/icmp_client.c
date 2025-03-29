@@ -50,7 +50,7 @@ printf("Initializing WSA...\n");
     printf("Enter the number of packets you want to send.\n");
     int number_of_packets;
     scanf("The number wanted is: %d", &number_of_packets);
-    #define PACKET_SIZE 56;
+    #define PACKET_SIZE 56
     char icmp_packet[PACKET_SIZE]; //BUFFER
     for (i = 0; i <= number_of_packets; i++)
     {
@@ -72,11 +72,13 @@ printf("Initializing WSA...\n");
         char icmp_packet_cpy;
         memcpy(icmp_packet_cpy, icmp_header, strlen(icmp_header));
         memset(&icmp_packet_cpy->icmp.checksum, 0, sizeof(icmp_packet_cpy->icmp.checksum));
-        //Break the packet into 4 number of blocks with 14 bits in each blocks.
-        char block1[14] = memcpy(icmp_packet_cpy, block1, strlen(block1));
-        char block2[14] = memcpy(icmp_packet_cpy + sizeof(block1), block2, strlen(block2));
-        char block3[14] = memcpy(icmp_packet_cpy + sizeof(block2), block3, strlen(block3));
-        char block4[14] = memcpy(icmp_packet_cpy + sizeof(block3), block4, strlen(block4));
+        //Break the packet into 4 number of blocks with n bits in each blocks.
+        int n_bytes = PACKET_SIZE / 4;
+        char block1[n_bytes], block2[n_bytes], block3[n_bytes], block4[n_bytes];
+        memcpy(block1, icmp_packet_cpy, n_bytes);
+        memcpy(block2, icmp_packet_cpy + n_bytes*1, n_bytes);
+        memcpy(block3, icmp_packet_cpy + n_bytes*2, n_bytes);
+        memcpy(block4, icmp_packet_cpy + n_bytes*3, n_bytes);
         
         struct timeval current_time, end_time;
         START_TIMER(&current_time);
