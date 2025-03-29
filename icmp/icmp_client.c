@@ -62,18 +62,27 @@ printf("Initializing WSA...\n");
         icmp->sequence = 1;
 
         // Add a small payload (optional but recommended)
-        const char *payload = "PINGTEST"; 
-        memcpy(buffer + sizeof(struct icmp_header), payload, strlen(payload));
+        char payload[PACKET_SIZE - 8];
+        memset(&payload, "A", sizeof(payload));
+
+        memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
+
+        // Calculate the checksum before sending
+        
+        struct timeval current_time, end_time;
+        START_TIMER(&current_time);
+        printf("Sending packet...\n");
+        //sendto(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
+
+        #define PACKET_SIZE = PACKET_SIZE * 2;
 
     }
 
-    // Calculate the checksum before sending
-
-    printf("Sending packet...\n");
-    //sendto(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
+    
     
     printf("Receiving packet...\n");
     //recvfrom(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*) &from, &fromlen);
+    START_TIMER(&end_time);
 
     printf("Closing ICMP client socket...\n");
     close(icmp_client_socket);
