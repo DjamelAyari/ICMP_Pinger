@@ -74,13 +74,23 @@ printf("Initializing WSA...\n");
         memset(&icmp_packet_cpy->icmp.checksum, 0, sizeof(icmp_packet_cpy->icmp.checksum));
         
         int lenght = strlen(icmp_packet_cpy);
-        int sum = 0;
+        uint16_t sum = 0;
         for (int j = 0; j < lenght; j += 2)
         {
             uint16_t sequence = (icmp_packet_cpy[j] << 8) | (icmp_packet_cpy[j + 1]);
 
-            sum += sequence;
+            if ((sum + sequence) <= 65535)
+            {
+                sum += sequence;
+            }
+            else if ((sum + sequence) > 65535)
+            {
+                uint16_t carry = (sum + sequence) - 65535;
+                sum += carry;
+            }
         }
+
+        sum = ~sum;
 
         struct timeval current_time, end_time;
         START_TIMER(&current_time);
