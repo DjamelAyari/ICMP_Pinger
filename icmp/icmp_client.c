@@ -1,4 +1,12 @@
 #include "icmp_header.h"
+#include <netinet/ip_icmp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netinet/ip.h>
+//#include <netinet/icmp.h>
+#include <unistd.h>
+
 //https://medium.com/@future_fanatic/how-to-ping-a-host-in-c-in-5-steps-88d22415109c
 
 int main() //The main() function will be replace by a custom one.
@@ -14,6 +22,10 @@ printf("Initializing WSA...\n");
     printf("WSA initializing ok !\n");
 #endif
 
+    printf("What server do you want to reach ?\n");
+    char client_input[56];
+    scanf("The server is: %s\n", client_input);
+
     //Creating a struct to tell the getaddrinfo() how to interpret the user input.
     printf("Interpreting the user input...\n");
     struct addrinfo client_input_struct, *client_input_struct_result;
@@ -24,10 +36,10 @@ printf("Initializing WSA...\n");
 
     //Filling with client_input_struct the getaddrinfo().
     //Converting the user input into an IP address.
-    if (getaddrinfo(client_input, NULL, client_input_struct, client_input_struct_result) != 0)
+    if (getaddrinfo(client_input, NULL, &client_input_struct, &client_input_struct_result) != 0)
     {
         perror("getaddrinfo() failed !\n");
-        exit(EXIT_FAILURE);
+        return(1);
     }
 
     //Extracting the IP from client_input_struct_result and copy it in the final_address struct.
@@ -43,7 +55,7 @@ printf("Initializing WSA...\n");
     if (icmp_client_socket < 0)
     {
         perror("socket() failed !\n");
-        exit(EXIT_FAILURE);
+        return(1);
     }
 
     printf("Creating ICMP packet...\n");
@@ -52,9 +64,9 @@ printf("Initializing WSA...\n");
     scanf("The number wanted is: %d", &number_of_packets);
     #define PACKET_SIZE 56
     char icmp_packet[PACKET_SIZE]; //BUFFER
-    for (i = 0; i <= number_of_packets; i++)
+    for (int i = 0; i <= number_of_packets; i++)
     {
-        struct icmp_header *icmp = (struct icmp_header)icmp_packet;
+        struct icmp_header *icmp; //= (struct icmp_header)icmp_packet;
         icmp->type = ICMP_ECHO;
         icmp->code = 0;
         icmp->checksum = 0;
