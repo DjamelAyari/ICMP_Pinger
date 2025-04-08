@@ -66,6 +66,7 @@ printf("Initializing WSA...\n");
         memset(&payload, "A", sizeof(payload));
 
         memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
+        //printf("The packet header and payload is: %c", )
 
         // Calculate the checksum before sending
         //Creating a copy of the buffer for the checksum.
@@ -90,11 +91,18 @@ printf("Initializing WSA...\n");
             }
         }
 
+        printf("Sum is: %d", sum);
         sum = ~sum;
+        printf("Sum is: %d", sum);
+        icmp_packet->icmp.checksum = sum;
 
         struct timeval current_time, end_time;
         START_TIMER(&current_time);
         printf("Sending packet...\n");
+        /*I have checked my MTU and the IP Segment size in order to avoid packet fragmentation.
+        My MTU is 1500 and the maximum total size of an IPv4 packet (header + payload) is 65,535 bytes.
+        Since the biggest packet can be 1344 + 8 for the ICMP header and 20 for the IP segment, I will avoid fragmentation.*/
+
         //sendto(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
 
         //NEED TO USE MALLOC/REALLOC !!!
@@ -105,6 +113,8 @@ printf("Initializing WSA...\n");
     
     //USE A LOOP AND TIMEOUT (FOR PACKETS LOSES).
     printf("Receiving packet...\n");
+    printf("The recv_packet_buffer size will be: %d\n", PACKET_SIZE);
+    char recv_packet_buffer[PACKET_SIZE];
     //recvfrom(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*) &from, &fromlen);
     START_TIMER(&end_time);
 
