@@ -63,10 +63,19 @@ printf("Initializing WSA...\n");
     int number_of_packets;
     scanf("The number wanted is: %d", &number_of_packets);
     #define PACKET_SIZE 56
+    typedef struct icmp_header
+    {
+        uint8_t type;
+        uint8_t code;
+        uint16_t checksum;
+        uint16_t id;
+        uint16_t sequence;
+    } icmp;
+
     char icmp_packet[PACKET_SIZE]; //BUFFER
     for (int i = 0; i <= number_of_packets; i++)
     {
-        struct icmp_header *icmp; //= (struct icmp_header)icmp_packet;
+        struct icmp_header *icmp = (struct icmp_header *)icmp_packet;
         icmp->type = ICMP_ECHO;
         icmp->code = 0;
         icmp->checksum = 0;
@@ -75,16 +84,18 @@ printf("Initializing WSA...\n");
 
         // Add a small payload (optional but recommended)
         char payload[PACKET_SIZE - 8];
-        memset(&payload, "A", sizeof(payload));
+        int payload_size = strlen(payload);
+        memset(&payload, 'A', sizeof(payload));
 
         memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
         //printf("The packet header and payload is: %c", )
 
         // Calculate the checksum before sending
         //Creating a copy of the buffer for the checksum.
-        char icmp_packet_cpy;
-        memcpy(icmp_packet_cpy, icmp_header, strlen(icmp_header));
-        memset(&icmp_packet_cpy->icmp.checksum, 0, sizeof(icmp_packet_cpy->icmp.checksum));
+        char icmp_packet_cpy[sizeof(struct icmp_header) + payload_size];
+        memcpy(&icmp_packet_cpy, &icmp, sizeof(struct icmp_header));
+        memset(&((struct icmp_header *)icmp_packet_cpy)->checksum, 0, sizeof(((struct icmp_header *)icmp_packet_cpy)->checksum));
+
         
         int lenght = strlen(icmp_packet_cpy);
         uint16_t sum = 0;
@@ -106,7 +117,7 @@ printf("Initializing WSA...\n");
         printf("Sum is: %d", sum);
         sum = ~sum;
         printf("Sum is: %d", sum);
-        icmp_packet->icmp.checksum = sum;
+        ((struct icmp_header *)icmp_packet)->checksum = sum;
 
         struct timeval current_time, end_time;
         START_TIMER(&current_time);

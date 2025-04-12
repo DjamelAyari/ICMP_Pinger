@@ -33,3 +33,5 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+
+#define ICMP_ECHO 8
