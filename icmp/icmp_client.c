@@ -129,7 +129,7 @@ printf("Initializing WSA...\n");
         //sendto(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
 
         //NEED TO USE MALLOC/REALLOC !!!
-        #define PACKET_SIZE = PACKET_SIZE * 2;
+        PACKET_SIZE * 2;
 
     }
 
@@ -139,6 +139,7 @@ printf("Initializing WSA...\n");
     printf("The recv_packet_buffer size will be: %d\n", PACKET_SIZE);
     char recv_packet_buffer[PACKET_SIZE];
     //recvfrom(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*) &from, &fromlen);
+    //struct timeval current_time, end_time;
     START_TIMER(&end_time);
 
     printf("Closing ICMP client socket...\n");

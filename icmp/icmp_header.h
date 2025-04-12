@@ -35,3 +35,11 @@
 #include <ctype.h>
 
 #define ICMP_ECHO 8
+
+#if defined(_WIN32)
+    #include <windows.h>
+    #define START_TIMER(t) QueryPerformanceCounter(t)
+#else
+    #include <sys/time.h>
+    #define START_TIMER(t) gettimeofday(t, NULL)
+#endif
