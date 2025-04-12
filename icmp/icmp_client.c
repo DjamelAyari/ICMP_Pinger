@@ -58,10 +58,19 @@ printf("Initializing WSA...\n");
         return(1);
     }
 
-    printf("Creating ICMP packet...\n");
-    printf("Enter the number of packets you want to send.\n");
-    int number_of_packets;
-    scanf("The number wanted is: %d", &number_of_packets);
+    printf("Entering ICMP packet creation function...\n");
+    void icmp_packet_creation()
+    {
+        printf("Creating ICMP packet...\n");
+        printf("Enter the number of packets you want to send.\n");
+
+        int number_of_packets;
+        scanf("The number wanted is: %d", &number_of_packets);
+    }
+    
+    
+    
+    
     #define PACKET_SIZE 56
     typedef struct icmp_header
     {
