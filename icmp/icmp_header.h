@@ -43,3 +43,7 @@
     #include <sys/time.h>
     #define START_TIMER(t) gettimeofday(t, NULL)
 #endif
+
+void icmp_packet_creation();
+
+uint16_t check_sum(char *icmp_packet_cpy);

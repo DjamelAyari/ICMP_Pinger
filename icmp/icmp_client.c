@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <netinet/ip.h>
-//#include <netinet/icmp.h>
 #include <unistd.h>
 
 //https://medium.com/@future_fanatic/how-to-ping-a-host-in-c-in-5-steps-88d22415109c
@@ -42,12 +41,6 @@ printf("Initializing WSA...\n");
         return(1);
     }
 
-    //Extracting the IP from client_input_struct_result and copy it in the final_address struct.
-    /* final_address;
-    memset(&final_address, 0, sizeof(final_address));
-    final_address.sin_family = AF_INET;
-    final_address.sin_addr = ((struct sockaddr_in*)client_input_struct_result->ai_addr)->sin_addr;
-    */
     freeaddrinfo(client_input_struct_result);
 
     printf("Creating ICMP client socket...\n");
@@ -65,47 +58,58 @@ printf("Initializing WSA...\n");
         printf("Enter the number of packets you want to send.\n");
 
         int number_of_packets;
-        scanf("The number wanted is: %d", &number_of_packets);
+        printf("The number wanted is: ");
+        scanf("%d", &number_of_packets);
+
+
+        printf("Creating ICMP header structure...\n");
+        typedef struct icmp_header
+        {
+            uint8_t type;
+            uint8_t code;
+            uint16_t checksum;
+            uint16_t id;
+            uint16_t sequence;
+        } icmp;
+
+        printf("Filling ICMP header structure...\n");
+        int packet_size =  28;
+        char icmp_packet[packet_size]; //BUFFER
+        icmp *icmp_hdr = (icmp*)icmp_packet;
+        {
+            icmp_hdr->type = ICMP_ECHO;
+            icmp_hdr->code = 0;
+            icmp_hdr->checksum = 0;
+            icmp_hdr->id = getpid();
+            icmp_hdr->sequence = 1;
+        }
+
+        for (int i = 0; i <= number_of_packets; i++)
+        {
+            printf("Creating payload for the ICMP packet...\n");
+            char payload[packet_size - 8];
+            memset(&payload, 'A', sizeof(payload));
+            int payload_size = sizeof(payload);
+
+            printf("Adding payload to the ICMP packet...\n");
+            memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
+            //printf("The packet header and payload is: %c", )
+
+            packet_size * 2;
+            
+            printf("Copying the ICMP packet for the checksum calculation..\n");
+            char icmp_packet_cpy[sizeof(struct icmp_header) + payload_size];
+            memcpy(icmp_packet_cpy, icmp_packet, sizeof(struct icmp_header));
+            memset(&((struct icmp_header *)icmp_packet_cpy)->checksum, 0, sizeof(((struct icmp_header *)icmp_packet_cpy)->checksum));
+
+            check_sum(*icmp_packet_cpy)
+            ((struct icmp_header *)icmp_packet)->checksum = sum;
+        }
     }
     
-    
-    
-    
-    #define PACKET_SIZE 56
-    typedef struct icmp_header
+    uint16_t check_sum(char icmp_packet_cpy)
     {
-        uint8_t type;
-        uint8_t code;
-        uint16_t checksum;
-        uint16_t id;
-        uint16_t sequence;
-    } icmp;
-
-    char icmp_packet[PACKET_SIZE]; //BUFFER
-    for (int i = 0; i <= number_of_packets; i++)
-    {
-        struct icmp_header *icmp = (struct icmp_header *)icmp_packet;
-        icmp->type = ICMP_ECHO;
-        icmp->code = 0;
-        icmp->checksum = 0;
-        icmp->id = getpid();
-        icmp->sequence = 1;
-
-        // Add a small payload (optional but recommended)
-        char payload[PACKET_SIZE - 8];
-        int payload_size = strlen(payload);
-        memset(&payload, 'A', sizeof(payload));
-
-        memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
-        //printf("The packet header and payload is: %c", )
-
-        // Calculate the checksum before sending
-        //Creating a copy of the buffer for the checksum.
-        char icmp_packet_cpy[sizeof(struct icmp_header) + payload_size];
-        memcpy(&icmp_packet_cpy, &icmp, sizeof(struct icmp_header));
-        memset(&((struct icmp_header *)icmp_packet_cpy)->checksum, 0, sizeof(((struct icmp_header *)icmp_packet_cpy)->checksum));
-
-        
+        printf("Entering check_sum function...\n");
         int lenght = strlen(icmp_packet_cpy);
         uint16_t sum = 0;
         for (int j = 0; j < lenght; j += 2)
@@ -126,11 +130,13 @@ printf("Initializing WSA...\n");
         printf("Sum is: %d", sum);
         sum = ~sum;
         printf("Sum is: %d", sum);
-        ((struct icmp_header *)icmp_packet)->checksum = sum;
 
-        struct timeval current_time, end_time;
-        START_TIMER(&current_time);
-        printf("Sending packet...\n");
+        return(sum);
+    }
+        
+    struct timeval current_time, end_time;
+    START_TIMER(&current_time);
+    printf("Sending packet...\n");
         /*I have checked my MTU and the IP Segment size in order to avoid packet fragmentation.
         My MTU is 1500 and the maximum total size of an IPv4 packet (header + payload) is 65,535 bytes.
         Since the biggest packet can be 1344 + 8 for the ICMP header and 20 for the IP segment, I will avoid fragmentation.*/
@@ -138,15 +144,13 @@ printf("Initializing WSA...\n");
         //sendto(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
 
         //NEED TO USE MALLOC/REALLOC !!!
-        PACKET_SIZE * 2;
 
-    }
 
     
     //USE A LOOP AND TIMEOUT (FOR PACKETS LOSES).
     printf("Receiving packet...\n");
-    printf("The recv_packet_buffer size will be: %d\n", PACKET_SIZE);
-    char recv_packet_buffer[PACKET_SIZE];
+    printf("The recv_packet_buffer size will be: %d\n", packet_size);
+    char recv_packet_buffer[packet_size];
     //recvfrom(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*) &from, &fromlen);
     //struct timeval current_time, end_time;
     START_TIMER(&end_time);
