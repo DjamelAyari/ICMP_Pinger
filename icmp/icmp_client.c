@@ -26,7 +26,7 @@ printf("Initializing WSA...\n");
 
     printf("What server do you want to reach ?\n");
     char client_input[56];
-    scanf("The server is: %s\n", client_input);
+    scanf("%s", client_input);
 
     //Creating a struct to tell the getaddrinfo() how to interpret the user input.
     printf("Interpreting the user input...\n");
@@ -38,10 +38,15 @@ printf("Initializing WSA...\n");
 
     //Filling with client_input_struct the getaddrinfo().
     //Converting the user input into an IP address.
-    int error_code = 0;
-    if (error_code = getaddrinfo(client_input, NULL, &client_input_struct, &client_input_struct_result) != 0)
+    int error_code;
+    if ((error_code = getaddrinfo(client_input, NULL, &client_input_struct, &client_input_struct_result)) != 0)
     {
-        fprintf(stderr, "getaddrinfo() failed: %s\n", gai_strerror(error_code));
+        //fprintf(stderr, "getaddrinfo() failed: %d\n", gai_strerror(error_code));
+        // Error handling based on platform
+        // Print the numerical error code to understand what went wrong
+        fprintf(stderr, "getaddrinfo() failed: %d\n", error_code);
+        // Use gai_strerror to print the associated error message for POSIX systems like WSL
+        fprintf(stderr, "Error message: %s\n", gai_strerror(error_code));
         return(1);
     }
     

@@ -47,3 +47,23 @@
 void icmp_packet_creation();
 
 uint16_t check_sum(char *icmp_packet_cpy, uint16_t  sum);
+
+#if defined(_WIN32)
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+// Define portable error handling macro for Windows
+#define GETADDRINFO_ERRNO() (WSAGetLastError())
+#define GETADDRINFO_ERROR_MSG(code) (gai_strerror(code))  // This works on POSIX, but we can mock it for Windows
+
+#else
+
+#include <netdb.h>
+#include <errno.h>
+
+// Define portable error handling macro for POSIX systems
+#define GETADDRINFO_ERRNO() (errno)
+#define GETADDRINFO_ERROR_MSG(code) (gai_strerror(code))  // This works on POSIX systems
+
+#endif
