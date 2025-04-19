@@ -5,6 +5,9 @@
 #include <string.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+#include <arpa/inet.h>
+#include <netinet/in.h> 
+
 
 //https://medium.com/@future_fanatic/how-to-ping-a-host-in-c-in-5-steps-88d22415109c
 
@@ -35,11 +38,20 @@ printf("Initializing WSA...\n");
 
     //Filling with client_input_struct the getaddrinfo().
     //Converting the user input into an IP address.
-    if (getaddrinfo(client_input, NULL, &client_input_struct, &client_input_struct_result) != 0)
+    int error_code = 0;
+    if (error_code = getaddrinfo(client_input, NULL, &client_input_struct, &client_input_struct_result) != 0)
     {
-        perror("getaddrinfo() failed !\n");
+        fprintf(stderr, "getaddrinfo() failed: %s\n", gai_strerror(error_code));
         return(1);
     }
+    
+    char ip_address[INET_ADDRSTRLEN];  // Declare a buffer large enough for the IP address string
+    if (inet_ntop(client_input_struct_result->ai_family, &((struct sockaddr_in *)client_input_struct_result->ai_addr)->sin_addr, ip_address, sizeof(ip_address)) == NULL)
+    {
+        perror("inet_ntop failed");
+        return 1;
+    }
+    printf("The IP address is: %s\n", ip_address);
 
     freeaddrinfo(client_input_struct_result);
 
@@ -50,8 +62,10 @@ printf("Initializing WSA...\n");
         perror("socket() failed !\n");
         return(1);
     }
+    printf("ICMP client socket creation ok !\n");
 
     printf("Entering ICMP packet creation function...\n");
+    int packet_size = 0;
     void icmp_packet_creation()
     {
         printf("Creating ICMP packet...\n");
@@ -73,7 +87,7 @@ printf("Initializing WSA...\n");
         } icmp;
 
         printf("Filling ICMP header structure...\n");
-        int packet_size =  28;
+        packet_size =  28;
         char icmp_packet[packet_size]; //BUFFER
         icmp *icmp_hdr = (icmp*)icmp_packet;
         {
@@ -84,34 +98,36 @@ printf("Initializing WSA...\n");
             icmp_hdr->sequence = 1;
         }
 
+        char payload[packet_size - 8];
+        int payload_size = 0;
         for (int i = 0; i <= number_of_packets; i++)
         {
             printf("Creating payload for the ICMP packet...\n");
-            char payload[packet_size - 8];
+            //char payload[packet_size - 8];
             memset(&payload, 'A', sizeof(payload));
-            int payload_size = sizeof(payload);
+            payload_size = sizeof(payload);
 
             printf("Adding payload to the ICMP packet...\n");
             memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
             //printf("The packet header and payload is: %c", )
 
             packet_size * 2;
-            
-            printf("Copying the ICMP packet for the checksum calculation..\n");
-            char icmp_packet_cpy[sizeof(struct icmp_header) + payload_size];
-            memcpy(icmp_packet_cpy, icmp_packet, sizeof(struct icmp_header));
-            memset(&((struct icmp_header *)icmp_packet_cpy)->checksum, 0, sizeof(((struct icmp_header *)icmp_packet_cpy)->checksum));
-
-            check_sum(*icmp_packet_cpy)
-            ((struct icmp_header *)icmp_packet)->checksum = sum;
         }
+
+        printf("Copying the ICMP packet for the checksum calculation..\n");
+        char icmp_packet_cpy[sizeof(struct icmp_header) + payload_size];
+        memcpy(icmp_packet_cpy, icmp_packet, sizeof(struct icmp_header));
+        memset(&((struct icmp_header *)icmp_packet_cpy)->checksum, 0, sizeof(((struct icmp_header *)icmp_packet_cpy)->checksum));
+
+        uint16_t sum = 0;
+        check_sum(icmp_packet_cpy, sum);
+        ((struct icmp_header *)icmp_packet)->checksum = sum;
     }
     
-    uint16_t check_sum(char icmp_packet_cpy)
+    uint16_t check_sum(char *icmp_packet_cpy, uint16_t sum)
     {
         printf("Entering check_sum function...\n");
-        int lenght = strlen(icmp_packet_cpy);
-        uint16_t sum = 0;
+        int lenght = sizeof(icmp_packet_cpy);
         for (int j = 0; j < lenght; j += 2)
         {
             uint16_t sequence = (icmp_packet_cpy[j] << 8) | (icmp_packet_cpy[j + 1]);
