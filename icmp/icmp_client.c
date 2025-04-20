@@ -78,7 +78,7 @@ printf("Initializing WSA...\n");
     freeaddrinfo(client_input_struct_result);
 
     printf("Entering ICMP packet creation function...\n");
-    icmp_packet_creation()//! packet_size variable needs to be return by th
+    icmp_packet_creation();
     
     
     
@@ -97,9 +97,9 @@ printf("Initializing WSA...\n");
 
     
     //USE A LOOP AND TIMEOUT (FOR PACKETS LOSES).
-    printf("Receiving packet...\n");
-    printf("The recv_packet_buffer size will be: %d\n", packet_size); 
-    char recv_packet_buffer[packet_size];
+    //printf("Receiving packet...\n");
+    //printf("The recv_packet_buffer size will be: %d\n", packet_size); 
+    //char recv_packet_buffer[packet_size];
     //recvfrom(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*) &from, &fromlen);
     //struct timeval current_time, end_time;
     START_TIMER(&end_time);

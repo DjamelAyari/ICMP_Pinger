@@ -67,3 +67,5 @@ uint16_t check_sum(char *icmp_packet_cpy, uint16_t  sum);
 #define GETADDRINFO_ERROR_MSG(code) (gai_strerror(code))  // This works on POSIX systems
 
 #endif
+
+void icmp_packet_creation();
