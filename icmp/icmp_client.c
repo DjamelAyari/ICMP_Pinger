@@ -35,6 +35,10 @@ printf("Initializing WSA...\n");
     client_input_struct.ai_family = AF_INET;
     client_input_struct.ai_socktype = SOCK_RAW;
     client_input_struct.ai_protocol = IPPROTO_ICMP;
+    printf("ai_family: %d\n", client_input_struct_result->ai_family);
+    printf("ai_socktype: %d\n", client_input_struct_result->ai_socktype);
+    printf("ai_protocol: %d\n", client_input_struct_result->ai_protocol);
+
 
     //Filling with client_input_struct the getaddrinfo().
     //Converting the user input into an IP address.
@@ -49,16 +53,18 @@ printf("Initializing WSA...\n");
         fprintf(stderr, "Error message: %s\n", gai_strerror(error_code));
         return(1);
     }
+    printf("ai_family: %d\n", client_input_struct_result->ai_family);
+    printf("ai_socktype: %d\n", client_input_struct_result->ai_socktype);
+    printf("ai_protocol: %d\n", client_input_struct_result->ai_protocol);
+
     
-    char ip_address[INET_ADDRSTRLEN];  // Declare a buffer large enough for the IP address string
+    char ip_address[INET6_ADDRSTRLEN];  // Declare a buffer large enough for the IP address string
     if (inet_ntop(client_input_struct_result->ai_family, &((struct sockaddr_in *)client_input_struct_result->ai_addr)->sin_addr, ip_address, sizeof(ip_address)) == NULL)
     {
         perror("inet_ntop failed");
         return 1;
     }
     printf("The IP address is: %s\n", ip_address);
-
-    freeaddrinfo(client_input_struct_result);
 
     printf("Creating ICMP client socket...\n");
     SOCKET icmp_client_socket = socket(client_input_struct_result->ai_family, client_input_struct_result->ai_socktype, client_input_struct_result->ai_protocol);
@@ -68,6 +74,8 @@ printf("Initializing WSA...\n");
         return(1);
     }
     printf("ICMP client socket creation ok !\n");
+
+    freeaddrinfo(client_input_struct_result);
 
     printf("Entering ICMP packet creation function...\n");
     int packet_size = 0;
