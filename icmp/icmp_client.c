@@ -78,90 +78,10 @@ printf("Initializing WSA...\n");
     freeaddrinfo(client_input_struct_result);
 
     printf("Entering ICMP packet creation function...\n");
-    int packet_size = 0;
-    void icmp_packet_creation()
-    {
-        printf("Creating ICMP packet...\n");
-        printf("Enter the number of packets you want to send.\n");
-
-        int number_of_packets;
-        printf("The number wanted is: ");
-        scanf("%d", &number_of_packets);
-
-
-        printf("Creating ICMP header structure...\n");
-        typedef struct icmp_header
-        {
-            uint8_t type;
-            uint8_t code;
-            uint16_t checksum;
-            uint16_t id;
-            uint16_t sequence;
-        } icmp;
-
-        printf("Filling ICMP header structure...\n");
-        packet_size =  28;
-        char icmp_packet[packet_size]; //BUFFER
-        icmp *icmp_hdr = (icmp*)icmp_packet;
-        {
-            icmp_hdr->type = ICMP_ECHO;
-            icmp_hdr->code = 0;
-            icmp_hdr->checksum = 0;
-            icmp_hdr->id = getpid();
-            icmp_hdr->sequence = 1;
-        }
-
-        char payload[packet_size - 8];
-        int payload_size = 0;
-        for (int i = 0; i <= number_of_packets; i++)
-        {
-            printf("Creating payload for the ICMP packet...\n");
-            //char payload[packet_size - 8];
-            memset(&payload, 'A', sizeof(payload));
-            payload_size = sizeof(payload);
-
-            printf("Adding payload to the ICMP packet...\n");
-            memcpy(icmp_packet + sizeof(struct icmp_header), payload, strlen(payload));
-            //printf("The packet header and payload is: %c", )
-
-            packet_size * 2;
-        }
-
-        printf("Copying the ICMP packet for the checksum calculation..\n");
-        char icmp_packet_cpy[sizeof(struct icmp_header) + payload_size];
-        memcpy(icmp_packet_cpy, icmp_packet, sizeof(struct icmp_header));
-        memset(&((struct icmp_header *)icmp_packet_cpy)->checksum, 0, sizeof(((struct icmp_header *)icmp_packet_cpy)->checksum));
-
-        uint16_t sum = 0;
-        check_sum(icmp_packet_cpy, sum);
-        ((struct icmp_header *)icmp_packet)->checksum = sum;
-    }
+    icmp_packet_creation()//! packet_size variable needs to be return by th
     
-    uint16_t check_sum(char *icmp_packet_cpy, uint16_t sum)
-    {
-        printf("Entering check_sum function...\n");
-        int lenght = sizeof(icmp_packet_cpy);
-        for (int j = 0; j < lenght; j += 2)
-        {
-            uint16_t sequence = (icmp_packet_cpy[j] << 8) | (icmp_packet_cpy[j + 1]);
-
-            if ((sum + sequence) <= 65535)
-            {
-                sum += sequence;
-            }
-            else if ((sum + sequence) > 65535)
-            {
-                uint16_t carry = (sum + sequence) - 65535;
-                sum += carry;
-            }
-        }
-
-        printf("Sum is: %d", sum);
-        sum = ~sum;
-        printf("Sum is: %d", sum);
-
-        return(sum);
-    }
+    
+    
         
     struct timeval current_time, end_time;
     START_TIMER(&current_time);
@@ -178,7 +98,7 @@ printf("Initializing WSA...\n");
     
     //USE A LOOP AND TIMEOUT (FOR PACKETS LOSES).
     printf("Receiving packet...\n");
-    printf("The recv_packet_buffer size will be: %d\n", packet_size);
+    printf("The recv_packet_buffer size will be: %d\n", packet_size); 
     char recv_packet_buffer[packet_size];
     //recvfrom(icmp_client_socket, icmp_packet, sizeof(icmp_packet), 0, (struct sockaddr*) &from, &fromlen);
     //struct timeval current_time, end_time;
