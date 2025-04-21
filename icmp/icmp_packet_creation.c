@@ -47,6 +47,8 @@ void icmp_packet_creation()
     printf("Id: %d\n", icmp_hdr->id);
     printf("Sequence: %d\n", icmp_hdr->sequence);
 
+    printf("TEST FOR PACKET: %d\n", icmp_packet[0]);
+
     // Allocate an array of char pointers (each will point to one buffer).
     char **payload_pointers_array = malloc(number_of_packets * sizeof(char *));
     if (payload_pointers_array == NULL)
@@ -75,25 +77,14 @@ void icmp_packet_creation()
         payload_size = payload_size * 2;
     }
 
+    printf("Adding payload to the ICMP packet...\n");
+    memcpy(icmp_packet + sizeof(icmp), payload_pointers_array[0], strlen(payload_pointers_array[0]));
+    printf("ICMP Packet payload is: %c\n", icmp_packet[9]);
+
     for (int i = 0; i < number_of_packets; i++)
     {
         free(payload_pointers_array[i]);
     }
     free(payload_pointers_array);
-
-    /*printf("Adding payload to the ICMP packet...\n");
-    memcpy(icmp_packet + sizeof(struct icmp), payload, payload_size);
-    //printf("The packet header and payload is: %c", )
     
-    printf("Payload: %s\n", payload);
-    printf("Packet: %s\n", icmp_packet);
-
-    printf("Copying the ICMP packet for the checksum calculation..\n");
-    char icmp_packet_cpy[sizeof(struct icmp) + payload_size];
-    memcpy(icmp_packet_cpy, icmp_packet, sizeof(struct icmp_header));
-    memset(&((struct icmp_header *)icmp_packet_cpy)->checksum, 0, sizeof(((struct icmp_header *)icmp_packet_cpy)->checksum));
-
-    uint16_t sum = 0;
-    check_sum(icmp_packet_cpy, sum);
-    ((struct icmp_header *)icmp_packet)->checksum = sum;*/
 }
