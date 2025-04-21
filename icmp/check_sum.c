@@ -1,3 +1,13 @@
+#include "icmp_header.h"
+#include <netinet/ip_icmp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netinet/ip.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
 uint16_t check_sum(char *icmp_packet_cpy, uint16_t sum)
     {
         printf("Entering check_sum function...\n");
@@ -17,9 +27,9 @@ uint16_t check_sum(char *icmp_packet_cpy, uint16_t sum)
             }
         }
 
-        printf("Sum is: %d", sum);
+        printf("Sum is: %d\n", sum);
         sum = ~sum;
-        printf("Sum is: %d", sum);
+        printf("Sum is: %d\n", sum);
 
         return(sum);
     }

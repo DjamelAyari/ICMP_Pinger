@@ -35,9 +35,6 @@ printf("Initializing WSA...\n");
     client_input_struct.ai_family = AF_INET;
     client_input_struct.ai_socktype = SOCK_RAW;
     client_input_struct.ai_protocol = IPPROTO_ICMP;
-    printf("ai_family: %d\n", client_input_struct_result->ai_family);
-    printf("ai_socktype: %d\n", client_input_struct_result->ai_socktype);
-    printf("ai_protocol: %d\n", client_input_struct_result->ai_protocol);
 
 
     //Filling with client_input_struct the getaddrinfo().
