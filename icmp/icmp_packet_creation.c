@@ -47,8 +47,6 @@ void icmp_packet_creation()
     printf("Id: %d\n", icmp_hdr->id);
     printf("Sequence: %d\n", icmp_hdr->sequence);
 
-    printf("TEST FOR PACKET: %d\n", icmp_packet[0]);
-
     // Allocate an array of char pointers (each will point to one buffer).
     char **payload_pointers_array = malloc(number_of_packets * sizeof(char *));
     if (payload_pointers_array == NULL)
@@ -78,6 +76,7 @@ void icmp_packet_creation()
     }
 
     printf("Adding payload to the ICMP packet...\n");
+    for ()
     memcpy(icmp_packet + sizeof(icmp), payload_pointers_array[0], strlen(payload_pointers_array[0]));
     //printf("ICMP Packet payload is: %c\n", icmp_packet[9]);
     for (int j = 0; j < packet_size; j++)
