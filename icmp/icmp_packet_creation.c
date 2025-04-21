@@ -79,7 +79,11 @@ void icmp_packet_creation()
 
     printf("Adding payload to the ICMP packet...\n");
     memcpy(icmp_packet + sizeof(icmp), payload_pointers_array[0], strlen(payload_pointers_array[0]));
-    printf("ICMP Packet payload is: %c\n", icmp_packet[9]);
+    //printf("ICMP Packet payload is: %c\n", icmp_packet[9]);
+    for (int j = 0; j < packet_size; j++)
+    {
+        printf("ICMP Packet byte [%d]: %d\n", j, (unsigned char)icmp_packet[j]);
+    }
 
     for (int i = 0; i < number_of_packets; i++)
     {
