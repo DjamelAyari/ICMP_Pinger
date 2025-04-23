@@ -8,10 +8,11 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-uint16_t check_sum(char *icmp_packet_cpy, uint16_t sum)
+uint16_t check_sum(char *icmp_packet_cpy)
     {
         printf("Entering check_sum function...\n");
         int lenght = sizeof(icmp_packet_cpy);
+        int sum = 0;
         for (int j = 0; j < lenght; j += 2)
         {
             uint16_t sequence = (icmp_packet_cpy[j] << 8) | (icmp_packet_cpy[j + 1]);

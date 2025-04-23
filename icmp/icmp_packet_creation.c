@@ -31,7 +31,8 @@ void icmp_packet_creation()
 
     printf("Filling ICMP header structure...\n");
     packet_size =  28;
-    char icmp_packet[packet_size]; //BUFFER
+    //char icmp_packet[packet_size]; //BUFFER
+    char *icmp_packet = malloc(packet_size);
     memset(icmp_packet, 0, packet_size);
     icmp *icmp_hdr = (icmp*)icmp_packet;
     {
@@ -76,18 +77,31 @@ void icmp_packet_creation()
     }
 
     printf("Adding payload to the ICMP packet...\n");
-    for ()
-    memcpy(icmp_packet + sizeof(icmp), payload_pointers_array[0], strlen(payload_pointers_array[0]));
-    //printf("ICMP Packet payload is: %c\n", icmp_packet[9]);
-    for (int j = 0; j < packet_size; j++)
+    for (int j = 0; j <= number_of_packets; j++)
     {
-        printf("ICMP Packet byte [%d]: %d\n", j, (unsigned char)icmp_packet[j]);
+        //I NEED TO MALLOC THE PACKET SIZE
+        packet_size = payload_size - packet_size;
+        icmp_packet = realloc(icmp_packet, packet_size);
+
+        if (packet_size == 0)
+        {
+            printf("malloc() for packet_size %d failed\n", j);
+            exit(1);
+        }
+        printf("The size of the packet %d is of size: %d\n", j + 1, packet_size);
+        memcpy(icmp_packet + sizeof(icmp), payload_pointers_array[j], strlen(payload_pointers_array[j]));
+        for (int k = 0; k < packet_size; k++)
+        {
+            printf("ICMP Packet byte [%d]: %d\n", k, (unsigned char)icmp_packet[k]);
+        }
+        check_sum(icmp_packet);
     }
 
-    for (int i = 0; i < number_of_packets; i++)
+    for (int l = 0; l < number_of_packets; l++)
     {
-        free(payload_pointers_array[i]);
+        free(payload_pointers_array[l]);
     }
     free(payload_pointers_array);
     
 }
+
